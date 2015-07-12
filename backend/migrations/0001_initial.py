@@ -67,12 +67,13 @@ class Migration(migrations.Migration):
                     help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
                     default=True, verbose_name='active')),
                 ('date_from', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date from')),
-                ('date_to', models.DateTimeField(blank=True, verbose_name='date to')),
+                ('date_to', models.DateTimeField(blank=True, null=True, default=django.utils.timezone.now,
+                                                 verbose_name='date to')),
                 ('role', models.CharField(max_length=30, blank=True, verbose_name='role')),
                 ('phone', models.CharField(max_length=24, blank=True)),
                 ('status', models.CharField(default='active', max_length=12, db_index=True,
-                                            choices=[('full_time', 'Full TIme'), ('contract', 'Contract'),
-                                                     ('candidate', 'Candidate'), ('deactivated', 'Deactivated')]))
+                                            choices=[('Full Time', 'Full TIme'), ('Contract', 'Contract'),
+                                                     ('Candidate', 'Candidate'), ('Deactivated', 'Deactivated')]))
             ],
             options={
                 'verbose_name_plural': 'employees',

@@ -159,10 +159,10 @@ USER_STATUS = [
 ]
 
 EMPLOYEE_STATUS = [
-    ('full_time', 'Full TIme'),
-    ('contract', 'Contract'),
-    ('candidate', 'Candidate'),
-    ('deactivated', 'Deactivated')
+    ('Full Time', 'Full TIme'),
+    ('Contract', 'Contract'),
+    ('Candidate', 'Candidate'),
+    ('Deactivated', 'Deactivated')
 ]
 
 
