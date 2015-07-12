@@ -16,8 +16,9 @@ class TimestampedModel(models.Model):
     class Meta:
         abstract = True
 
+
 __all__ = 'Client', 'ClientType', \
-          'User', 'UserRoles'
+          'User', 'UserRoles', 'Employee'
 
 log = logging.getLogger(__name__)
 
@@ -113,6 +114,24 @@ class PegulaUserManager(BaseUserManager):
         return users[0] if users else None
 
 
+class PegulaEmployeeManager(BaseUserManager, models.Manager):
+    def create_employee(self, email, is_staff, is_superuser, **extra_fields):
+        now = timezone.now()
+        email = self.normalize_email(email)
+        if not email:
+            raise ValueError('Email address must be set')
+        employee = self.model(email=email,
+                              is_staff=is_staff, is_active=True,
+                              is_superuser=is_superuser, date_from=now,
+                              **extra_fields)
+        employee.save(using=self._db)
+        return employee
+
+    def get_by_email(self, email):
+        employees = super(PegulaEmployeeManager, self).get_queryset().filter(email=email)
+        return employees[0] if employees else None
+
+
 class PegulaAdminManager(models.Manager):
     def get_queryset(self):
         return super(PegulaAdminManager, self).get_queryset().filter(groups__name=UserRoles.ADMIN)
@@ -136,6 +155,13 @@ class ClientUserManager(models.Manager):
 
 USER_STATUS = [
     ('active', 'Active'),
+    ('deactivated', 'Deactivated')
+]
+
+EMPLOYEE_STATUS = [
+    ('full_time', 'Full TIme'),
+    ('contract', 'Contract'),
+    ('candidate', 'Candidate'),
     ('deactivated', 'Deactivated')
 ]
 
@@ -215,3 +241,58 @@ class User(TimestampedModel, AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Employee(TimestampedModel):
+    # See: https://docs.djangoproject.com/en/1.8/topics/auth/customizing/#specifying-a-custom-user-model
+    # This class partially duplicates/overrides the model provided by Django's `AbstractUser`
+    email = models.EmailField(_('email address'), max_length=48, unique=True, blank=False, db_index=True,
+                              error_messages={
+                                  'unique': _("A user with that email address already exists."),
+                              })
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    role = models.CharField(_('role'), max_length=30, blank=True)
+    is_staff = models.BooleanField(_('staff status'), default=False,
+                                   help_text=_('Designates whether the user can log into this admin site.'))
+    is_active = models.BooleanField(_('active'), default=True,
+                                    help_text=_('Designates whether this user should be treated as '
+                                                'active. Unselect this instead of deleting accounts.'))
+    date_from = models.DateTimeField(_('date from'), default=timezone.now)
+    date_to = models.DateTimeField(_('date to'), blank=True, null=True, default=timezone.now)
+
+    USERNAME_FIELD = 'email'
+
+    phone = models.CharField(max_length=24, blank=True)
+    status = models.CharField(choices=EMPLOYEE_STATUS, max_length=12, db_index=True)
+
+    objects = models.Manager()
+
+    def get_full_name(self):
+        """Returns the first_name plus the last_name, with a space in between."""
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
+
+    def get_short_name(self):
+        """Returns the short name for the user."""
+        return self.first_name
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """Sends an email to this User."""
+        send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def deactivate(self):
+        self.status = 'deactivated'
+        self.is_active = False
+
+    def clean(self):
+        if self.is_platform_admin:
+            self.is_staff = True
+            self.is_superuser = True
+        super(Employee, self).clean()
+
+    def __str__(self):
+        return self.email
+
+    def save(self, *args, **kwargs):
+        return super(Employee, self).save(*args, **kwargs)

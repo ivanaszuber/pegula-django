@@ -7,6 +7,8 @@ from rest_framework import routers
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response as RestResponse
 from rest_framework.filters import SearchFilter
+from backend.models import Employee
+from backend.serializers import EmployeeFullSerializer
 
 from .models import *
 from .serializers import *
@@ -77,6 +79,37 @@ class UserView(viewsets.ModelViewSet):
         user.save()
 
 
+class EmployeeView(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeFullSerializer
+    lookup_field = 'email'
+    lookup_value_regex = '[^@]+@[^@]+\.[^@]+'  # DRF DefaultRouter regex splits on '.' character, so we must supply custom URL regex for email
+
+    filter_backends = (SearchFilter,)
+    search_fields = ('email', 'first_name', 'last_name')
+
+    def get_serializer_class(self):
+        # We route between serializers to ensure that "updates" can't change username, org, password
+        if self.request.method in ('GET', 'POST', 'PUT', 'PATCH'):
+            return EmployeeFullSerializer
+        return self.serializer_class
+
+    def get_queryset(self):
+        # We use this strategy for rather than `rest_framework.filters.DjangoFilterBackend` so
+        # that we can _also_ use `SearchFilter`. There may be some better way to use them in tandem.
+        queryset = self.queryset
+        status = self.request.query_params.get('status', None)
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
+
+    def perform_destroy(self, user):
+        # hook into HTTP DELETE verb such that we mark status=deactivated
+        # override the `destroy()` method if we need full control over HTTP response, etc.
+        user.deactivate()
+        user.save()
+
+
 class RolesViewSet(viewsets.ViewSet):
     lookup_field = 'org_type'
 
@@ -95,3 +128,4 @@ router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'clients', ClientView, 'clients')
 router.register(r'users', UserView, 'users')
 router.register(r'roles', RolesViewSet, 'roles')
+router.register(r'employees', EmployeeView, 'employees')

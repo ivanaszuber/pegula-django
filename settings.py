@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'pegula.sqlite3'),
     }
 }
 
@@ -102,6 +102,7 @@ REST_FRAMEWORK = {
 REST_AUTH_SERIALIZERS = {
     'TOKEN_SERIALIZER': 'backend.serializers.AuthTokenSerializer',
     'USER_DETAILS_SERIALIZER': 'backend.serializers.UserFullSerializer',
+    'EMPLOYEE_DETAILS_SERIALIZER': 'backend.serializers.EmployeeFullSerializer',
     'LOGIN_SERIALIZER': 'backend.serializers.RestAuthLoginSerializer',
 }
 

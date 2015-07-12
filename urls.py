@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^docs/', include('rest_framework_swagger.urls')),
 
     # Django REST Framework API views
-    url(r'^api/v1', include('backend.urls', namespace='auth')),
+    url(r'^api/v1', include('backend.urls', namespace='v1')),
 ]
