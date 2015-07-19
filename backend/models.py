@@ -68,19 +68,19 @@ class Client(TimestampedModel):
 
 class UserRoles:
     ADMIN = 'Administrator'
-    LVL1_USER = 'Level 1 User'
-    LVL2_USER = 'Level 2 User'
-    LVL3_USER = 'Level 3 User'
+    PROJ_MNG = 'Project Manager'
+    ORG_MNG = 'Organization Manager'
+    EMP_MNG = 'Employee Manager'
 
     valid_types = {
-        ADMIN, LVL1_USER, LVL2_USER, LVL3_USER
+        ADMIN, PROJ_MNG, ORG_MNG, EMP_MNG
     }
 
     by_org = {
-        ClientType.ADMIN: [ADMIN, LVL1_USER],
-        ClientType.LVL1: [LVL1_USER],
-        ClientType.LVL2: [LVL2_USER],
-        ClientType.LVL3: [LVL3_USER]
+        ClientType.ADMIN: [ADMIN, PROJ_MNG, ORG_MNG, EMP_MNG],
+        ClientType.LVL1: [PROJ_MNG],
+        ClientType.LVL2: [ORG_MNG],
+        ClientType.LVL3: [EMP_MNG]
     }
 
 
@@ -139,7 +139,7 @@ class PegulaAdminManager(models.Manager):
 
 class Lvl1AdminManager(models.Manager):
     def get_queryset(self):
-        return super(Lvl1AdminManager, self).get_queryset().filter(groups__name=UserRoles.LVL1_USER)
+        return super(Lvl1AdminManager, self).get_queryset().filter(groups__name=UserRoles.PROJ_MNG)
 
     def for_org(self, org_id):
         return self.get_queryset().filter(client__org_id=org_id)
@@ -218,7 +218,7 @@ class User(TimestampedModel, AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_org_admin(self):
-        return self.groups.filter(name=UserRoles.LVL1_USER).exists()
+        return self.groups.filter(name=UserRoles.PROJ_MNG).exists()
 
     @property
     def is_org_user(self):

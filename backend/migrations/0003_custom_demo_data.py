@@ -16,9 +16,9 @@ ORGS = [
 USERS = [
     # email/password,             org_id,        roles
     ('admin@pegula.io',         'admin',     [UserRoles.ADMIN]),
-    ('lvl1@pegula.io',   'lvl1', [UserRoles.ADMIN, UserRoles.LVL1_USER]),
-    ('lvl2@pegula.io', 'lvl2',    [UserRoles.ADMIN, UserRoles.LVL2_USER]),
-    ('lvl3@pegula.io',     'lvl3',          [UserRoles.LVL3_USER])
+    ('lvl1@pegula.io', 'lvl1', [UserRoles.ADMIN, UserRoles.PROJ_MNG]),
+    ('lvl2@pegula.io', 'lvl2', [UserRoles.ADMIN, UserRoles.ORG_MNG]),
+    ('lvl3@pegula.io', 'lvl3', [UserRoles.EMP_MNG])
 ]
 
 
