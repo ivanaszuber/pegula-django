@@ -61,8 +61,6 @@ class Migration(migrations.Migration):
                                             verbose_name='email address')),
                 ('first_name', models.CharField(max_length=30, blank=True, verbose_name='first name')),
                 ('last_name', models.CharField(max_length=30, blank=True, verbose_name='last name')),
-                ('is_staff', models.BooleanField(help_text='Designates whether the user can log into this admin site.',
-                                                 default=False, verbose_name='staff status')),
                 ('is_active', models.BooleanField(
                     help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.',
                     default=True, verbose_name='active')),
@@ -78,10 +76,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name_plural': 'employees',
                 'verbose_name': 'employee',
-            },
-            managers=[
-                ('objects', backend.models.PegulaEmployeeManager()),
-            ],
+            }
         ),
         migrations.CreateModel(
             name='Client',
@@ -98,12 +93,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='client',
-            field=models.ForeignKey(null=True, to='backend.Client', blank=True, related_name='users',
-                                    related_query_name='user'),
         ),
         migrations.AddField(
             model_name='user',

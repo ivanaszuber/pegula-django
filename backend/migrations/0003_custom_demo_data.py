@@ -14,11 +14,10 @@ ORGS = [
 
 
 USERS = [
-    # email/password,             org_id,        roles
-    ('admin@pegula.io',         'admin',     [UserRoles.ADMIN]),
-    ('lvl1@pegula.io', 'lvl1', [UserRoles.ADMIN, UserRoles.PROJ_MNG]),
-    ('lvl2@pegula.io', 'lvl2', [UserRoles.ADMIN, UserRoles.ORG_MNG]),
-    ('lvl3@pegula.io', 'lvl3', [UserRoles.EMP_MNG])
+    # email/password,     roles
+    ('admin@pegula.io', [UserRoles.ADMIN]),
+    ('manager@pegula.io', [UserRoles.MNG]),
+    ('employee@pegula.io', [UserRoles.EMPL])
 ]
 
 
@@ -32,10 +31,9 @@ def create_orgs(apps, schema_editor):
 @transaction.atomic
 def create_users(apps, schema_editor):
     """Create canned Users"""
-    for email, orgname, roles in USERS:
+    for email, roles in USERS:
         password = email.split('@', 1)[0]
-        org = Client.objects.get(org_id=orgname)
-        user = User.objects.create_user(email, password=password, client=org)
+        user = User.objects.create_user(email, password=password)
         user.groups.add(*[Group.objects.get(name=role) for role in roles])
         user.full_clean()
         user.save()

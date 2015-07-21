@@ -1,14 +1,10 @@
 import logging
 
-from django.http.response import Http404
-
 from rest_framework import viewsets
 from rest_framework import routers
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response as RestResponse
 from rest_framework.filters import SearchFilter
-from backend.models import Employee
-from backend.serializers import EmployeeFullSerializer
 
 from .models import *
 from .serializers import *
@@ -110,22 +106,7 @@ class EmployeeView(viewsets.ModelViewSet):
         user.save()
 
 
-class RolesViewSet(viewsets.ViewSet):
-    lookup_field = 'org_type'
-
-    def list(self, req):
-        """Retrieve a mapping of org_type->role_choices"""
-        return RestResponse(UserRoles.by_org)
-
-    def retrieve(self, req, org_type):
-        """Retrive a list of Role choices for a specified `org_type`"""
-        if not org_type or org_type not in UserRoles.by_org:
-            raise Http404()
-        return RestResponse(UserRoles.by_org[org_type])
-
-
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'clients', ClientView, 'clients')
 router.register(r'users', UserView, 'users')
-router.register(r'roles', RolesViewSet, 'roles')
 router.register(r'employees', EmployeeView, 'employees')

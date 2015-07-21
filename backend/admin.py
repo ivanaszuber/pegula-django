@@ -30,7 +30,7 @@ class UserAdmin(UserAdmin):
 
     # change form
     fieldsets = (
-        (None, {'fields': ('email', 'client', 'password')}),
+        (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'created', 'modified')}),
@@ -40,7 +40,7 @@ class UserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'client', 'password1', 'password2'),
+            'fields': ('email', 'password1', 'password2'),
         }),
     )
 

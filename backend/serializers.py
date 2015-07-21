@@ -1,5 +1,4 @@
 import logging
-from backend.models import Employee
 
 log = logging.getLogger(__name__)
 
@@ -86,7 +85,6 @@ class ClientSerializer(serializers.ModelSerializer):
 
 
 class UserFullSerializer(serializers.ModelSerializer):
-    client = serializers.PrimaryKeyRelatedField(queryset=Client.objects)
     roles = serializers.SlugRelatedField(source='groups', slug_field='name', queryset=Group.objects,
                                          many=True, required=False,
                                          help_text='List of potential roles:  ' + ', '.join(UserRoles.valid_types))
@@ -94,7 +92,7 @@ class UserFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
-            'email', 'password', 'client', 'phone', 'roles', 'status', 'first_name', 'last_name', 'created', 'modified')
+            'email', 'password', 'phone', 'roles', 'status', 'first_name', 'last_name', 'created', 'modified')
         read_only_fields = ('created', 'modified')
         write_only_fields = ('password',)
 
@@ -118,9 +116,9 @@ class UserRestrictedSerializer(UserFullSerializer):
     """Restricted serializer for updates, since some fields are untouchable"""
 
     class Meta(UserFullSerializer.Meta):
-        fields = ('email', 'client', 'phone', 'roles', 'status', 'first_name', 'last_name', 'created',
+        fields = ('email', 'phone', 'roles', 'status', 'first_name', 'last_name', 'created',
                   'modified')  # excludes: password
-        read_only_fields = ('email', 'client', 'created', 'modified')
+        read_only_fields = ('email', 'created', 'modified')
 
 
 class EmployeeFullSerializer(serializers.ModelSerializer):
