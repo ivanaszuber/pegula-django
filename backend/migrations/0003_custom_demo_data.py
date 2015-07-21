@@ -5,11 +5,11 @@ from backend.models import *
 
 
 ORGS = [
-    # name, org_id, org_type
-    ('Pegula', 'admin', ClientType.ADMIN),
-    ('LVL1', 'lvl1', ClientType.LVL1),
-    ('LVL2', 'lvl2', ClientType.LVL2),
-    ('LVL3', 'lvl3', ClientType.LVL3)
+    # name, id, type
+    ('Client 1', 'client1', ClientType.TYP1),
+    ('Client 2', 'client2', ClientType.TYP2),
+    ('Client 3', 'client3', ClientType.TYP3),
+    ('Client 4', 'client4', ClientType.TYP4)
 ]
 
 
@@ -24,8 +24,8 @@ USERS = [
 @transaction.atomic
 def create_orgs(apps, schema_editor):
     """Create canned Client"""
-    for name, org_id, org_type in ORGS:
-        org = Client(name=name, org_id=org_id, org_type=org_type)
+    for name, id, address, phone, type in ORGS:
+        org = Client(name=name, id=id, type=type, address=address, phone=phone)
         org.save()
 
 @transaction.atomic

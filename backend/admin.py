@@ -8,7 +8,7 @@ from .models import *
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'org_id': ('name',)}
+    prepopulated_fields = {'id': ('name',)}
 
 
 class UserCreationForm(UserCreationForm):

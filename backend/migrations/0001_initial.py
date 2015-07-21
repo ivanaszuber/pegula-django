@@ -83,9 +83,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('org_id', models.SlugField(max_length=16, primary_key=True, serialize=False, unique=True)),
+                ('id', models.SlugField(max_length=16, primary_key=True, serialize=False, unique=True)),
                 ('name', models.CharField(max_length=64)),
-                ('org_type',
+                ('address', models.CharField(max_length=128)),
+                ('phone', models.CharField(max_length=64)),
+                ('type',
                  models.CharField(help_text='Possible values: lvl1, lvl2, lvl3, admin', max_length=10, db_index=True,
                                   choices=[('admin', 'Administrators'), ('lvl1', 'LVL1'), ('lvl2', 'LVL2'),
                                            ('lvl3', 'LVL3')])),

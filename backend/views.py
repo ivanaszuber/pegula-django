@@ -20,14 +20,7 @@ log = logging.getLogger(__name__)
 class ClientView(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    lookup_field = 'org_id'
-
-    @detail_route(permission_classes=[])
-    def users(self, req, org_id):
-        """Retrieve a list of Users which belong to the specified Organization"""
-        org_users = User.org_users.for_org(org_id).order_by('email')
-        serializer = UserFullSerializer(org_users, many=True)
-        return RestResponse(serializer.data)
+    lookup_field = 'id'
 
 
 class UserView(viewsets.ModelViewSet):

@@ -24,45 +24,6 @@ log = logging.getLogger(__name__)
 
 
 #
-# Clients
-#
-
-class ClientType:
-    ADMIN = 'admin'
-    LVL1 = 'lvl1'
-    LVL2 = 'lvl2'
-    LVL3 = 'lvl3'
-
-    valid_types = {ADMIN, LVL1, LVL2, LVL3}
-
-    choices = (
-        (ADMIN, 'Pegula Administrators'),
-        (LVL1, 'Level 2 access'),
-        (LVL2, 'Level 2 access'),
-        (LVL3, 'Level 3 access')
-    )
-
-
-class Client(TimestampedModel):
-    """A top-level Organization, which serves as a collection of `OrgUsers`"""
-    org_id = models.SlugField(unique=True, max_length=16, primary_key=True)
-    name = models.CharField(max_length=64, blank=False)
-    org_type = models.CharField(choices=ClientType.choices, max_length=10, db_index=True, blank=False,
-                                help_text='Possible values: ' + ', '.join(ClientType.valid_types))
-
-    # Query managers
-    objects = models.Manager()
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.org_id:
-            self.org_id = slugify(self.name)
-        return super(Client, self).save(*args, **kwargs)
-
-
-#
 # User
 #
 
@@ -74,6 +35,19 @@ class UserRoles:
     valid_types = {
         ADMIN, MNG, EMPL
     }
+
+
+USER_STATUS = [
+    ('active', 'Active'),
+    ('deactivated', 'Deactivated')
+]
+
+EMPLOYEE_STATUS = [
+    ('Full Time', 'Full TIme'),
+    ('Contract', 'Contract'),
+    ('Candidate', 'Candidate'),
+    ('Deactivated', 'Deactivated')
+]
 
 
 class PegulaUserManager(BaseUserManager):
@@ -109,19 +83,6 @@ class PegulaUserManager(BaseUserManager):
 class PegulaAdminManager(models.Manager):
     def get_queryset(self):
         return super(PegulaAdminManager, self).get_queryset().filter(groups__name=UserRoles.ADMIN)
-
-
-USER_STATUS = [
-    ('active', 'Active'),
-    ('deactivated', 'Deactivated')
-]
-
-EMPLOYEE_STATUS = [
-    ('Full Time', 'Full TIme'),
-    ('Contract', 'Contract'),
-    ('Candidate', 'Candidate'),
-    ('Deactivated', 'Deactivated')
-]
 
 
 class User(TimestampedModel, AbstractBaseUser, PermissionsMixin):
@@ -249,3 +210,40 @@ class Employee(TimestampedModel):
 
     def save(self, *args, **kwargs):
         return super(Employee, self).save(*args, **kwargs)
+
+
+#
+# Clients
+#
+
+class ClientType:
+    TYP1 = 'Type1'
+    TYP2 = 'Type2'
+    TYP3 = 'Type3'
+    TYP4 = 'Type4'
+
+    valid_types = {TYP1, TYP2, TYP3, TYP4}
+
+    choices = (
+        (TYP1, 'Client Type 1'),
+        (TYP2, 'Client Type 2'),
+        (TYP3, 'Client Type 3'),
+        (TYP4, 'Client Type 4')
+    )
+
+
+class Client(TimestampedModel):
+    id = models.SlugField(unique=True, max_length=16, primary_key=True)
+    name = models.CharField(max_length=64, blank=False)
+    address = models.CharField(max_length=128)
+    phone = models.CharField(max_length=64)
+    type = models.CharField(choices=ClientType.choices, max_length=10, db_index=True, blank=False,
+                            help_text='Possible values: ' + ', '.join(ClientType.valid_types))
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.id = slugify(self.name)
+        return super(Client, self).save(*args, **kwargs)
